@@ -21,7 +21,7 @@
             <li><a href="index.html">Menu</a></li>
         </ul>
         
-        <table border="1">
+        <table border="0">
             <tr>
                 <td>Author ID</td>
                 <td>Author Name</td>
