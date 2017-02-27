@@ -6,7 +6,9 @@
 package edu.wctc.adk.distjava.bookwebapp.controller;
 
 import edu.wctc.adk.distjava.bookwebapp.model.Author;
+import edu.wctc.adk.distjava.bookwebapp.model.AuthorDao;
 import edu.wctc.adk.distjava.bookwebapp.model.AuthorService;
+import edu.wctc.adk.distjava.bookwebapp.model.MySQLDBAccessor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -26,6 +28,11 @@ public class AuthorController extends HttpServlet {
     private static final String RESULT_PAGE = "/authorList.jsp";
     private static final String ACTION = "action";
     private static final String LIST_ACTION = "list";
+    private static final String ADD_ACTION = "add";
+    private static final String UPD_ACTION = "upd";
+    private static final String REM_ACTION = "rem";
+    
+    private AuthorService authors = null;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -39,17 +46,33 @@ public class AuthorController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try {
+            // Set up data
+            authors = new AuthorService(
+                        new AuthorDao(new MySQLDBAccessor(), 
+                        "com.mysql.jdbc.Driver", 
+                        "jdbc:mysql://localhost:3306/book", "root", "root")
+                );
+            
             String action = request.getParameter(ACTION);
             
             if (action.equalsIgnoreCase(LIST_ACTION)){
-                AuthorService authors = new AuthorService();
                 
-                List<Author> allAuthors = authors.getAllAuthors();
+                
+                List<Author> allAuthors = authors.getAllAuthors("author", 120);
                 
                 request.setAttribute("authors", allAuthors);
                 
             }
+            else if (action.equalsIgnoreCase(ADD_ACTION)){
+                // get values from parameter
+                String authorName = request.getParameter("author_name");
+            }
+            else if (action.equalsIgnoreCase(UPD_ACTION)){
+                
+            }
+            else if (action.equalsIgnoreCase(REM_ACTION)){
             
+            }
             
             
             
