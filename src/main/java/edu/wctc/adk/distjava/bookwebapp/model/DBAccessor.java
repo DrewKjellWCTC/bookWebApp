@@ -8,6 +8,7 @@ package edu.wctc.adk.distjava.bookwebapp.model;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 
 /**
  *
@@ -27,5 +28,16 @@ public interface DBAccessor {
     int deleteById(Object dataId, String table, String colName) throws SQLException;
 
     int updateById(Object dataId, String table, String colName, Map<String, Object> colInfo) throws SQLException;
+
+    /**
+     * Open a connection using a connection pool configured on server.
+     *
+     * @param ds - a reference to a connection pool via a JNDI name, producing
+     * this object. Typically done in a servlet using InitalContext object.
+     * @throws SQLException - if ds cannot be established
+     */
+    void openConnection(DataSource ds) throws SQLException;
+
+    Map<String, Object> findById(Object dataId, String table, String colName) throws SQLException;
     
 }

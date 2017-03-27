@@ -16,30 +16,12 @@ public interface IAuthorDao {
 
     List<Author> getAuthorList(String tableName, int maxRecords) throws ClassNotFoundException, SQLException;
 
-    DBAccessor getDb();
-
-    String getDriverClass();
-
-    String getPwd();
-
-    String getUrl();
-
-    String getUserName();
-
-    void setDb(DBAccessor db);
-
-    void setDriverClass(String driverClass);
-
-    void setPwd(String pwd);
-
-    void setUrl(String url);
-
-    void setUserName(String userName);
-
     int addAuthor(String table, Author newAuth) throws SQLException, ClassNotFoundException;
 
     int removeAuthor(String table, Author remAuth) throws ClassNotFoundException, SQLException;
 
     int updateAuthor(String table, Author updAuth) throws SQLException, ClassNotFoundException;
+
+    Author getAuthorById(Integer authorId) throws Exception;
     
 }

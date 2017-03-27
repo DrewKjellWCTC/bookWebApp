@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import javax.sql.DataSource;
 
 /**
  *
@@ -27,6 +28,18 @@ import java.util.stream.Collectors;
 public class MySQLDBAccessor implements DBAccessor {
     
     private Connection conn;
+    
+    /**
+     * Open a connection using a connection pool configured on server.
+     *
+     * @param ds - a reference to a connection pool via a JNDI name, producing
+     * this object. Typically done in a servlet using InitalContext object.
+     * @throws SQLException - if ds cannot be established
+     */
+    @Override
+    public final void openConnection(DataSource ds) throws SQLException {
+        conn = ds.getConnection();
+    }
     
     // Consider creating custom exception
     @Override
@@ -87,6 +100,51 @@ public class MySQLDBAccessor implements DBAccessor {
         recordCount = stmt.executeUpdate();
                 
         return recordCount;
+    }
+    
+    @Override
+    public Map<String, Object> findById(Object dataId, String table, String colName) throws SQLException
+    {
+        int recordCount = -1;
+        String sql = "SELECT * FROM " + table + " WHERE " + colName + " = ?";
+        
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setObject(1, dataId);
+        
+        
+        ResultSet rs = stmt.executeQuery();
+        
+        Map<String,Object> results = new LinkedHashMap<>();
+        
+        
+        ResultSetMetaData rsmd = rs.getMetaData();
+        
+        // Get column count from meta data
+        // Knowing # of columns using getInt() and column number
+        int colCount = rsmd.getColumnCount();
+        Map<String,Object> record = null;
+        
+        while (rs.next())
+        {
+            // Linked hash map maintains the order of the keys
+            // Also faster for looping over the contents
+            
+            // Normal hash map does not maintain the order
+            record = new LinkedHashMap<>();
+            
+            for (int colNo = 1; colNo <= colCount; colNo++)
+            {
+                // Store each column for each row as a map
+                String rescolName = rsmd.getColumnName(colNo);
+                Object data = rs.getObject(colNo);
+                
+                record.put(rescolName, data);
+                
+            }
+            //results.add(record);
+        }
+                       
+        return results;
     }
     
     @Override

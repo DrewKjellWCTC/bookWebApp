@@ -67,12 +67,12 @@ public class AuthorService {
         
         Author tmp = new Author(null, "Drew Service", new Date());
         
-        test.addAuthor("author", tmp);
+        test.addAuthor("author", tmp.getAuthorName());
         
         tmp.setAuthorId(14);
         
         tmp.setAuthorName("Drew Service Update");
-        System.out.println(test.updateAuthor("author", tmp));
+        System.out.println(test.updateAuthor("author", tmp.getAuthorId().toString(), tmp.getAuthorName()));
                 
         
         List<Author> results = test.getAllAuthors("author", 100);
@@ -81,6 +81,6 @@ public class AuthorService {
         {
             System.out.println(row);
         }
-        System.out.println(test.removeAuthor("author", tmp));
+        System.out.println(test.removeAuthor("author", tmp.getAuthorId().toString()));
     }
 }

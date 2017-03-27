@@ -37,5 +37,10 @@
             </c:forEach>
             
         </table>
+        <form id="ctrlForm" name="ctrlForm" action="AuthorController?action=form">
+            <input type="submit" value="Add" name="add">
+            <input type="submit" value="Edit" name="edit">
+            <input type="submit" value="Delete" name="delete">
+        </form>
     </body>
 </html>

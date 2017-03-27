@@ -12,24 +12,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 
 /**
  *
  * @author drew
  */
-public class AuthorDao implements IAuthorDao {
+public class ConnPoolAuthorDao implements IAuthorDao {
+    private DataSource ds;
     private DBAccessor db;
-    private String driverClass;
-    private String url;
-    private String userName;
-    private String pwd;
 
-    public AuthorDao(DBAccessor db, String driverClass, String url, String userName, String pwd) {
+    public ConnPoolAuthorDao(DataSource ds, DBAccessor db) {
+        this.ds = ds;
         this.db = db;
-        this.driverClass = driverClass;
-        this.url = url;
-        this.userName = userName;
-        this.pwd = pwd;
     }
     
     
@@ -42,8 +37,8 @@ public class AuthorDao implements IAuthorDao {
     }
     
     @Override
-     public final Author getAuthorById(Integer authorId) throws Exception {
-        db.openConnection(driverClass, url, userName, pwd);
+    public final Author getAuthorById(Integer authorId) throws Exception {
+        db.openConnection(ds);
         Map<String,Object> rawRec = db.findById(authorId, "author", "author_id");
         db.closeConnection();
         
@@ -61,7 +56,7 @@ public class AuthorDao implements IAuthorDao {
         
         List<Author> authorList = new ArrayList<>();
         
-        db.openConnection(driverClass, url, userName, pwd);
+        db.openConnection(ds);
         
         List<Map<String,Object>> rawData = db.findRecordsFor(tableName, maxRecords);
         
@@ -98,7 +93,7 @@ public class AuthorDao implements IAuthorDao {
     
     @Override
     public int addAuthor(String table, Author newAuth) throws SQLException, ClassNotFoundException{
-        db.openConnection(driverClass, url, userName, pwd);
+        db.openConnection(ds);
         
         // Map author object to Map for insert
         Map<String,Object> colInfo = new HashMap<>();
@@ -115,7 +110,7 @@ public class AuthorDao implements IAuthorDao {
     
     @Override
     public int removeAuthor(String table, Author remAuth) throws ClassNotFoundException, SQLException{
-        db.openConnection(driverClass, url, userName, pwd);
+        db.openConnection(ds);
         int affected = db.deleteById(remAuth.getAuthorId(), table, "author_id");
         
         db.closeConnection();
@@ -125,7 +120,7 @@ public class AuthorDao implements IAuthorDao {
     
     @Override
     public int updateAuthor(String table, Author updAuth) throws SQLException, ClassNotFoundException{
-        db.openConnection(driverClass, url, userName, pwd);
+        db.openConnection(ds);
         
         Map<String,Object> colInfo = new HashMap<>();
         
@@ -140,66 +135,12 @@ public class AuthorDao implements IAuthorDao {
         return affected;
     }
 
-    public String getDriverClass() {
-        return driverClass;
-    }
-
-    public void setDriverClass(String driverClass) {
-        this.driverClass = driverClass;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
-    }
+    
     
     public static void main(String[] args) throws Exception {
         
         
-        IAuthorDao test;
-        test = new AuthorDao(new MySQLDBAccessor(), 
-                "com.mysql.jdbc.Driver", 
-                "jdbc:mysql://localhost:3306/book", "root", "root");
-        
-        Author tmp = new Author();
-        tmp.setAuthorName("Drew DAO Test");
-        tmp.setDateAdded(new Date());
-        
-        test.addAuthor("author", tmp);
-        
-        tmp.setAuthorId(11);
-        tmp.setAuthorName("DAO Updated");
-        
-        System.out.println(test.updateAuthor("author", tmp));
-        
-        List<Author> results = test.getAuthorList("author", 100);
-        
-        for (Author row : results)
-        {
-            System.out.println(row);
-        }
-        
-        System.out.println(test.removeAuthor("author", tmp));
-        
+       
         
     }
     
